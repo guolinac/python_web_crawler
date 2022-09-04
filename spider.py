@@ -1,3 +1,4 @@
+from os import read, readlink
 import re
 # 导入获取html的库
 from urllib import request
@@ -43,12 +44,34 @@ class Spider():
         # map(函数, 集合)，map会把集合里面的所有元素都传入函数，然后返回一个map对象，里面保存了结果
         return map(l, anchors)
 
+    # 排序
+    def __sort(self, anchors):
+        anchors = sorted(anchors, key=self.__sort_seed, reverse=True)
+        return anchors
+
+    # 比较大小的种子
+    def __sort_seed(self, anchor):
+        r = re.findall('\d*', anchor['number'])
+        r = r[0] + '.' + r[2]
+        number = float(r)
+        if '万' in anchor['number']:
+            number *= 10000
+        return number
+
+    # 打印结果
+    def __show(self, anchors):
+        for rank in range(0, len(anchors)):
+            print('rank: ' + str(rank + 1)
+            + ' | name: ' + anchors[rank]['name']
+            + ' | number: ' + anchors[rank]['number'])
+
     # Spider的入口方法
     def go(self):
         htmls = self.__fetch_content()
         anchors = self.__analysis(htmls)
         anchors = list(self.__refine(anchors))
-        print(anchors)
+        anchors = self.__sort(anchors)
+        self.__show(anchors)
 
 
 spider = Spider()
