@@ -33,14 +33,22 @@ class Spider():
             anchors.append(anchor)
         return anchors
 
+    # 数据精炼
     def __refine(self, anchors):
-        pass
+        #  strip() 方法用于移除字符串头尾指定的字符（默认为空格或换行符）或字符序列
+        l = lambda anchor: {
+            'name':anchor['name'][0].strip(),
+            'number':anchor['number'][0].strip()
+            }
+        # map(函数, 集合)，map会把集合里面的所有元素都传入函数，然后返回一个map对象，里面保存了结果
+        return map(l, anchors)
 
     # Spider的入口方法
     def go(self):
         htmls = self.__fetch_content()
         anchors = self.__analysis(htmls)
-        self.__refine(anchors)
+        anchors = list(self.__refine(anchors))
+        print(anchors)
 
 
 spider = Spider()
